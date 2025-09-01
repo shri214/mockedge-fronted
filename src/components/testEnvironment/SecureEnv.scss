@@ -1,0 +1,1687 @@
+// SecureExamEnvironment.scss - Professional styling for secure exam environment
+
+// Variables
+$primary-color: #1e40af;
+$primary-light: #3b82f6;
+$primary-dark: #1e3a8a;
+$secondary-color: #0f172a;
+$success-color: #059669;
+$success-light: #10b981;
+$warning-color: #d97706;
+$warning-light: #f59e0b;
+$error-color: #dc2626;
+$error-light: #ef4444;
+
+$text-primary: #0f172a;
+$text-secondary: #475569;
+$text-muted: #64748b;
+$text-light: #94a3b8;
+$text-white: #ffffff;
+
+$bg-primary: #ffffff;
+$bg-secondary: #f8fafc;
+$bg-tertiary: #f1f5f9;
+$bg-dark: #0f172a;
+$bg-overlay: rgba(15, 23, 42, 0.95);
+
+$border-color: #e2e8f0;
+$border-light: #f1f5f9;
+$border-dark: #334155;
+
+$shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+$shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+$shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+$gradient-primary: linear-gradient(135deg, $primary-color 0%, $primary-light 100%);
+$gradient-security: linear-gradient(135deg, #1e40af 0%, #0f172a 100%);
+$gradient-success: linear-gradient(135deg, $success-color 0%, $success-light 100%);
+$gradient-warning: linear-gradient(135deg, $warning-color 0%, $warning-light 100%);
+$gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
+
+// Base overlay styles
+%secure-overlay-base {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $bg-overlay;
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+  animation: overlayFadeIn 0.4s ease-out;
+}
+
+%secure-container-base {
+  background: $bg-primary;
+  border-radius: 16px;
+  box-shadow: $shadow-2xl;
+  border: 1px solid $border-color;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+// Common button styles
+%secure-button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 140px;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  &:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-xl;
+  }
+
+  &:not(:disabled):active {
+    transform: translateY(0);
+    transition-duration: 0.1s;
+  }
+}
+
+// Agreement Screen
+.secure-agreement-overlay {
+  @extend %secure-overlay-base;
+}
+
+.secure-agreement-container {
+  @extend %secure-container-base;
+  width: 100%;
+  max-width: 700px;
+  margin: 1rem;
+}
+
+.secure-agreement-header {
+  background: $gradient-security;
+  padding: 2rem;
+  border-radius: 16px 16px 0 0;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    opacity: 0.3;
+  }
+}
+
+.secure-agreement-header-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.secure-agreement-icon {
+  width: 56px;
+  height: 56px;
+  color: $text-white;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.secure-agreement-title-section {
+  flex: 1;
+  text-align: left;
+}
+
+.secure-agreement-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: $text-white;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.025em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.secure-agreement-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-weight: 500;
+}
+
+.secure-agreement-content {
+  padding: 2.5rem;
+}
+
+.secure-agreement-section {
+  margin-bottom: 2.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.secure-agreement-section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $text-primary;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: $gradient-primary;
+    border-radius: 2px;
+  }
+}
+
+.secure-agreement-requirements {
+  display: grid;
+  gap: 1rem;
+}
+
+.secure-requirement-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: $bg-secondary;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $bg-tertiary;
+    border-color: $primary-light;
+    transform: translateY(-1px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.secure-requirement-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+
+  &.camera-icon { color: $primary-color; }
+  &.monitor-icon { color: $success-color; }
+  &.lock-icon { color: $warning-color; }
+  &.wifi-icon { color: #06b6d4; }
+}
+
+.secure-prohibited-box {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 1px solid #fca5a5;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.secure-prohibited-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  
+  li {
+    color: #7f1d1d;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    
+    &:last-child { margin-bottom: 0; }
+  }
+}
+
+.secure-consequences-box {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border: 1px solid #fbbf24;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.secure-consequences-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.secure-consequence-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+}
+
+.secure-consequence-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+
+  &.warning-icon { color: $warning-color; }
+  &.critical-icon { color: $error-color; }
+}
+
+.secure-agreement-checkbox-container {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid $border-color;
+}
+
+.secure-agreement-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.secure-agreement-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid $primary-color;
+  border-radius: 4px;
+  margin: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  
+  &:checked {
+    background: $primary-color;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e");
+  }
+}
+
+.secure-agreement-checkbox-text {
+  color: $text-secondary;
+  line-height: 1.6;
+  font-size: 0.9375rem;
+}
+
+.secure-agreement-actions {
+  padding: 2rem;
+  background: $bg-secondary;
+  border-radius: 0 0 16px 16px;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  border-top: 1px solid $border-color;
+}
+
+.secure-agreement-cancel-btn {
+  @extend %secure-button-base;
+  background: $bg-primary;
+  color: $text-secondary;
+  border: 2px solid $border-color;
+
+  &:not(:disabled):hover {
+    background: $bg-tertiary;
+    border-color: $text-muted;
+    color: $text-primary;
+  }
+}
+
+.secure-agreement-enter-btn {
+  @extend %secure-button-base;
+  background: $gradient-security;
+  color: $text-white;
+  border: 2px solid transparent;
+  box-shadow: $shadow-lg;
+
+  &:not(:disabled):hover {
+    background: linear-gradient(135deg, $primary-dark, $secondary-color);
+    box-shadow: $shadow-xl;
+  }
+
+  &:disabled {
+    background: $text-light;
+    color: $text-white;
+  }
+}
+
+// Setup Screen
+.secure-setup-overlay {
+  @extend %secure-overlay-base;
+}
+
+.secure-setup-container {
+  @extend %secure-container-base;
+  max-width: 480px;
+  width: 90%;
+  text-align: center;
+  padding: 3rem 2.5rem;
+}
+
+.secure-setup-content {
+  margin-bottom: 2.5rem;
+}
+
+.secure-setup-icon-container {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 2rem;
+  background: $gradient-security;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: conic-gradient(from 0deg, $primary-color, $success-color, $primary-color);
+    border-radius: 50%;
+    z-index: -1;
+    animation: securityRotate 3s linear infinite;
+  }
+}
+
+.secure-setup-icon {
+  width: 40px;
+  height: 40px;
+  color: $text-white;
+}
+
+.secure-setup-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.025em;
+}
+
+.secure-setup-subtitle {
+  font-size: 1rem;
+  color: $text-secondary;
+  margin-bottom: 0;
+}
+
+.secure-setup-checks {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.secure-setup-check {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: $bg-secondary;
+  border: 2px solid $border-color;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  
+  &.check-pending {
+    .secure-setup-check-icon {
+      color: $text-muted;
+      animation: pulse 2s ease-in-out infinite;
+    }
+  }
+  
+  &.check-success {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-color: $success-color;
+    
+    .secure-setup-check-icon {
+      color: $success-color;
+    }
+  }
+}
+
+.secure-setup-check-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.secure-setup-loading {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.secure-setup-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid $border-light;
+  border-top: 3px solid $primary-color;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+// Verification Screen
+.secure-verification-overlay {
+  @extend %secure-overlay-base;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
+
+.secure-verification-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: $gradient-security;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 10000;
+  box-shadow: $shadow-md;
+}
+
+.secure-verification-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.secure-topbar-icon {
+  width: 24px;
+  height: 24px;
+  color: $text-white;
+}
+
+.secure-topbar-text {
+  color: $text-white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+}
+
+.secure-verification-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.secure-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  &.status-active {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+  
+  &.status-inactive {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+}
+
+.secure-status-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.secure-status-time {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: $text-white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.secure-time-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.secure-verification-main {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  height: 100vh;
+  padding-top: 60px;
+}
+
+.secure-verification-camera-panel {
+  background: $bg-primary;
+  border-right: 1px solid $border-color;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset -1px 0 0 $border-color;
+}
+
+.secure-camera-panel-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $text-primary;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.secure-camera-container {
+  background: $bg-dark;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  position: relative;
+  aspect-ratio: 4/3;
+  box-shadow: $shadow-lg;
+  border: 2px solid $border-dark;
+}
+
+.secure-camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: $bg-dark;
+}
+
+.secure-camera-status {
+  background: $bg-secondary;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid $border-color;
+}
+
+.secure-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.secure-status-value {
+  font-weight: 600;
+  
+  &.status-ok { color: $success-color; }
+  &.status-error { color: $error-color; }
+}
+
+.secure-verification-instructions {
+  background: $bg-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.secure-instructions-content {
+  max-width: 500px;
+  text-align: center;
+}
+
+.secure-instructions-icon {
+  width: 64px;
+  height: 64px;
+  color: $primary-color;
+  margin: 0 auto 2rem;
+  background: rgba($primary-color, 0.1);
+  padding: 16px;
+  border-radius: 50%;
+}
+
+.secure-instructions-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin-bottom: 2rem;
+  letter-spacing: -0.025em;
+}
+
+.secure-instructions-list {
+  text-align: left;
+  margin-bottom: 2rem;
+  
+  p {
+    margin-bottom: 0.75rem;
+    color: $text-secondary;
+    font-weight: 500;
+    
+    &:last-child { margin-bottom: 0; }
+  }
+}
+
+.secure-exam-details {
+  background: $bg-primary;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.secure-exam-details-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $text-primary;
+  margin-bottom: 1rem;
+}
+
+.secure-exam-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $primary-color;
+  margin-bottom: 0.5rem;
+}
+
+.secure-exam-questions {
+  font-size: 0.875rem;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.secure-start-exam-btn {
+  @extend %secure-button-base;
+  background: $gradient-success;
+  color: $text-white;
+  border: 2px solid transparent;
+  font-size: 1rem;
+  padding: 16px 32px;
+  margin-top: 2rem;
+  box-shadow: $shadow-lg;
+
+  &:not(:disabled):hover {
+    background: linear-gradient(135deg, #047857, $success-color);
+    box-shadow: $shadow-xl;
+  }
+
+  &:disabled {
+    background: $text-light;
+    color: $text-white;
+  }
+}
+
+// Violations Panel
+.secure-violations-panel {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: $gradient-error;
+  color: $text-white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: $shadow-xl;
+  z-index: 10001;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.secure-violations-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.secure-violations-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.secure-violations-text {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+// Animations
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes securityRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .secure-verification-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  
+  .secure-verification-camera-panel {
+    border-right: none;
+    border-bottom: 1px solid $border-color;
+  }
+}
+
+@media (max-width: 768px) {
+  .secure-agreement-container {
+    margin: 0.5rem;
+    max-width: none;
+  }
+  
+  .secure-agreement-header {
+    padding: 1.5rem;
+  }
+  
+  .secure-agreement-title {
+    font-size: 1.5rem;
+  }
+  
+  .secure-agreement-content {
+    padding: 1.5rem;
+  }
+  
+  .secure-agreement-actions {
+    flex-direction: column;
+    padding: 1.5rem;
+    
+    button {
+      width: 100%;
+    }
+  }
+  
+  .secure-verification-topbar {
+    padding: 0 1rem;
+  }
+  
+  .secure-verification-topbar-right {
+    gap: 1rem;
+  }
+  
+  .secure-status-time {
+    display: none; // Hide time on mobile to save space
+  }
+  
+  .secure-verification-camera-panel {
+    padding: 1.5rem;
+  }
+  
+  .secure-violations-panel {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .secure-setup-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .secure-setup-title {
+    font-size: 1.5rem;
+  }
+  
+  .secure-requirement-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .secure-verification-topbar-right {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+  }
+}
+
+// Dark mode enhancements
+@media (prefers-color-scheme: dark) {
+  %secure-container-base {
+    background: #1e293b;
+    border-color: #334155;
+  }
+  
+  .secure-agreement-content,
+  .secure-verification-camera-panel {
+    background: #1e293b;
+  }
+  
+  .secure-agreement-section-title,
+  .secure-setup-title,
+  .secure-instructions-title,
+  .secure-camera-panel-title {
+    color: #f1f5f9;
+  }
+  
+  .secure-agreement-checkbox-text {
+    color: #cbd5e1;
+  }
+  
+  .secure-requirement-item,
+  .secure-setup-check,
+  .secure-camera-status,
+  .secure-exam-details {
+    background: #334155;
+    border-color: #475569;
+  }
+  
+  .secure-agreement-cancel-btn {
+    background: #334155;
+    color: #cbd5e1;
+    border-color: #475569;
+    
+    &:not(:disabled):hover {
+      background: #475569;
+      color: #f1f5f9;
+    }
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  %secure-container-base {
+    border-width: 3px;
+    border-color: $text-primary;
+  }
+  
+  .secure-requirement-item,
+  .secure-setup-check {
+    border-width: 2px;
+  }
+  
+  %secure-button-base {
+    border-width: 3px;
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .secure-setup-icon-container::before,
+  .secure-setup-check.check-pending .secure-setup-check-icon,
+  .secure-setup-spinner {
+    animation: none;
+  }
+  
+  %secure-button-base {
+    transition: none;
+  }
+  
+  .secure-requirement-item {
+    transition: none;
+  }
+}
+
+// Security-specific styles
+.secure-security-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba($success-color, 0.9);
+  color: $text-white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// Professional enhancement for critical elements
+.secure-critical-warning {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border: 2px solid $error-color;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  animation: warningPulse 2s ease-in-out infinite;
+  
+  .secure-warning-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    
+    .secure-warning-icon {
+      width: 24px;
+      height: 24px;
+      color: $error-color;
+    }
+    
+    .secure-warning-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #7f1d1d;
+      margin: 0;
+    }
+  }
+  
+  .secure-warning-text {
+    color: #7f1d1d;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+// System status indicators
+.secure-system-status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.secure-system-status-item {
+  background: $bg-primary;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+  
+  &.status-ok {
+    border-color: $success-color;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    
+    .secure-system-status-icon {
+      color: $success-color;
+    }
+  }
+  
+  &.status-warning {
+    border-color: $warning-color;
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    
+    .secure-system-status-icon {
+      color: $warning-color;
+    }
+  }
+  
+  &.status-error {
+    border-color: $error-color;
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    
+    .secure-system-status-icon {
+      color: $error-color;
+    }
+  }
+}
+
+.secure-system-status-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.secure-system-status-text {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: $text-primary;
+}
+
+// Enhanced loading states
+.secure-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  
+  .secure-loading-content {
+    text-align: center;
+    
+    .secure-loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid $border-light;
+      border-top: 4px solid $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    .secure-loading-text {
+      font-weight: 600;
+      color: $text-primary;
+      font-size: 1rem;
+    }
+  }
+}
+
+// Security timeline
+.secure-violations-timeline {
+  max-height: 200px;
+  overflow-y: auto;
+  background: $bg-secondary;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  
+  .secure-violation-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid $border-color;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &.violation-warning {
+      .secure-violation-severity {
+        color: $warning-color;
+        background: rgba($warning-color, 0.1);
+      }
+    }
+    
+    &.violation-critical {
+      .secure-violation-severity {
+        color: $error-color;
+        background: rgba($error-color, 0.1);
+      }
+    }
+  }
+  
+  .secure-violation-severity {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .secure-violation-details {
+    flex: 1;
+    
+    .secure-violation-description {
+      font-weight: 500;
+      color: $text-primary;
+      margin-bottom: 0.25rem;
+    }
+    
+    .secure-violation-time {
+      font-size: 0.75rem;
+      color: $text-muted;
+    }
+  }
+}
+
+// Progress indicators
+.secure-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: $border-light;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 1rem 0;
+  
+  .secure-progress-fill {
+    height: 100%;
+    background: $gradient-primary;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: progressShimmer 2s ease-in-out infinite;
+    }
+  }
+}
+
+// Professional step indicators
+.secure-step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  
+  .secure-step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    position: relative;
+    
+    &.step-completed {
+      background: $gradient-success;
+      color: $text-white;
+    }
+    
+    &.step-active {
+      background: $gradient-primary;
+      color: $text-white;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    &.step-pending {
+      background: $bg-tertiary;
+      color: $text-muted;
+      border: 2px solid $border-color;
+    }
+    
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1rem;
+      height: 2px;
+      background: $border-color;
+    }
+  }
+}
+
+// Enhanced interactive elements
+.secure-interactive-card {
+  background: $bg-primary;
+  border: 2px solid $border-color;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba($primary-color, 0.1), transparent);
+    transition: left 0.6s ease;
+  }
+  
+  &:hover {
+    border-color: $primary-color;
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &.card-selected {
+    border-color: $primary-color;
+    background: linear-gradient(135deg, rgba($primary-color, 0.05), rgba($primary-color, 0.02));
+  }
+}
+
+// Security badge
+.secure-security-verified-badge {
+  position: fixed;
+  top: 50%;
+  left: 2rem;
+  transform: translateY(-50%);
+  background: $gradient-success;
+  color: $text-white;
+  padding: 1rem;
+  border-radius: 50%;
+  box-shadow: $shadow-xl;
+  z-index: 10001;
+  animation: securityPulse 3s ease-in-out infinite;
+  
+  .secure-badge-icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// Toast notifications
+.secure-toast-container {
+  position: fixed;
+  top: 80px;
+  right: 2rem;
+  z-index: 10002;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 400px;
+}
+
+.secure-toast {
+  background: $bg-primary;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: $shadow-xl;
+  animation: toastSlideIn 0.3s ease-out;
+  position: relative;
+  
+  &.toast-success {
+    border-left: 4px solid $success-color;
+    
+    .secure-toast-icon {
+      color: $success-color;
+    }
+  }
+  
+  &.toast-warning {
+    border-left: 4px solid $warning-color;
+    
+    .secure-toast-icon {
+      color: $warning-color;
+    }
+  }
+  
+  &.toast-error {
+    border-left: 4px solid $error-color;
+    
+    .secure-toast-icon {
+      color: $error-color;
+    }
+  }
+  
+  .secure-toast-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    
+    .secure-toast-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    
+    .secure-toast-text {
+      font-weight: 500;
+      color: $text-primary;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Additional animations
+@keyframes warningPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba($error-color, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba($error-color, 0);
+  }
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes securityPulse {
+  0%, 100% {
+    box-shadow: $shadow-xl, 0 0 0 0 rgba($success-color, 0.4);
+  }
+  50% {
+    box-shadow: $shadow-xl, 0 0 0 15px rgba($success-color, 0);
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Print styles - Hide secure environment when printing
+@media print {
+  .secure-agreement-overlay,
+  .secure-setup-overlay,
+  .secure-verification-overlay {
+    display: none !important;
+  }
+}
+
+// Accessibility enhancements
+.secure-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Focus management for security
+.secure-focus-trap {
+  &:focus-within {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+// Emergency exit button (always visible)
+.secure-emergency-exit {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: $gradient-error;
+  color: $text-white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  z-index: 10003;
+  box-shadow: $shadow-lg;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, #b91c1c, $error-color);
+    transform: translateY(-1px);
+    box-shadow: $shadow-xl;
+  }
+  
+  &:focus {
+    outline: 2px solid rgba($error-color, 0.5);
+    outline-offset: 2px;
+  }
+}
+
+// Professional typography
+.secure-typography-h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.secure-typography-h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+
+.secure-typography-h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.secure-typography-body {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: $text-secondary;
+}
+
+.secure-typography-small {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: $text-muted;
+}
+
+// Security monitoring indicators
+.secure-monitoring-panel {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  background: rgba($bg-primary, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: $shadow-lg;
+  z-index: 10001;
+  
+  .secure-monitoring-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+  
+  .secure-monitoring-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .secure-monitoring-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    
+    .secure-monitoring-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      
+      &.dot-active {
+        background: $success-color;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      &.dot-inactive {
+        background: $text-light;
+      }
+      
+      &.dot-error {
+        background: $error-color;
+        animation: warningBlink 1s ease-in-out infinite;
+      }
+    }
+  }
+}
+
+// Professional scrollbar styling
+.secure-scroll-container {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $bg-tertiary;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $text-light;
+    border-radius: 4px;
+    
+    &:hover {
+      background: $text-muted;
+    }
+  }
+}
+
+// Additional warning animations
+@keyframes warningBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+// Glass morphism effects for modern look
+.secure-glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// Professional card hover effects
+.secure-card-hover-effect {
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  &:hover::before {
+    left: 100%;
+  }
+}
+
+// Enhanced button states
+.secure-button-primary {
+  @extend %secure-button-base;
+  background: $gradient-primary;
+  color: $text-white;
+  border: 2px solid transparent;
+  
+  &:not(:disabled):hover {
+    background: linear-gradient(135deg, $primary-dark, $primary-color);
+  }
+}
+
+.secure-button-secondary {
+  @extend %secure-button-base;
+  background: $bg-primary;
+  color: $text-secondary;
+  border: 2px solid $border-color;
+  
+  &:not(:disabled):hover {
+    background: $bg-tertiary;
+    border-color: $primary-color;
+    color: $text-primary;
+  }
+}
+
+.secure-button-success {
+  @extend %secure-button-base;
+  background: $gradient-success;
+  color: $text-white;
+  border: 2px solid transparent;
+  
+  &:not(:disabled):hover {
+    background: linear-gradient(135deg, #047857, $success-color);
+  }
+}
+
+.secure-button-danger {
+  @extend %secure-button-base;
+  background: $gradient-error;
+  color: $text-white;
+  border: 2px solid transparent;
+  
+  &:not(:disabled):hover {
+    background: linear-gradient(135deg, #b91c1c, $error-color);
+  }
+}
+
+// Responsive enhancements for tablets
+@media (max-width: 1200px) and (min-width: 769px) {
+  .secure-verification-main {
+    grid-template-columns: 350px 1fr;
+  }
+  
+  .secure-agreement-header {
+    .secure-agreement-header-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+    
+    .secure-agreement-title-section {
+      text-align: center;
+    }
+  }
+}
+
+// Ultra-wide screen optimizations
+@media (min-width: 1400px) {
+  .secure-agreement-container {
+    max-width: 800px;
+  }
+  
+  .secure-verification-main {
+    grid-template-columns: 450px 1fr;
+  }
+}

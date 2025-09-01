@@ -1,0 +1,149 @@
+@use "../styles/variables.scss" as v;
+@use "../styles/mixins.scss";
+
+.navbar {
+  background-color: v.$background-color;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;   
+  left: 0;
+
+
+  .navbar-brand {
+    font-size: 1.5em;
+    font-weight: bold;
+    .logoImages {
+      img {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
+        border-radius: 100%;
+      }
+    }
+  }
+
+  .navbar-burger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+
+    span {
+      display: block;
+      height: 3px;
+      background: white;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    &.is-active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    &.is-active span:nth-child(2) {
+      opacity: 0;
+    }
+    &.is-active span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+  }
+
+  .navbar-menu {
+    width: 70%;
+    @include mixins.displayProperties(row, space-between, center);
+
+    .navbar-start {
+      @include mixins.displayProperties(row, flex-start, center);
+      gap: 15px;
+
+      .navbar-item {
+        position: relative;
+        color: white;
+        text-decoration: none;
+        font-family: v.$font-stack;
+        font-size: 1em;
+        font-weight: bold;
+
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0%;
+          height: 2px;
+          background: white;
+          transition: width 0.3s ease-in-out;
+        }
+        &:hover::after {
+          width: 100%;
+        }
+      }
+    }
+
+    .navbar-end {
+      .button {
+        margin-right: 15px;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        text-decoration: none;
+       
+      }
+    }
+  }
+}
+
+/* 📱 Responsive (≤767px) */
+@media (max-width: 767px) {
+  .navbar {
+    .navbar-burger {
+      display: flex;
+    }
+
+    .navbar-menu {
+      position: fixed;
+      top: 0;
+      right: -100%; // hidden off-screen
+      width: 250px;
+      height: 100vh;
+      background: v.$background-color;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 80px 20px 20px;
+      gap: 20px;
+      transition: right 0.3s ease-in-out;
+
+      .navbar-start {
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+      }
+
+      .navbar-end {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+
+        .button {
+          width: 100%;
+          text-align: center;
+        }
+      }
+
+      &.is-active {
+        right: 0; // slide in
+      }
+    }
+  }
+}

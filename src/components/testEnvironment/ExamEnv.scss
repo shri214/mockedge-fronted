@@ -1,0 +1,631 @@
+// ExamEnv.scss - Professional styling for exam environment
+
+// Variables
+$primary-color: #2563eb;
+$primary-dark: #1d4ed8;
+$success-color: #059669;
+$warning-color: #d97706;
+$error-color: #dc2626;
+$text-primary: #111827;
+$text-secondary: #6b7280;
+$text-muted: #9ca3af;
+$background-light: #f9fafb;
+$background-white: #ffffff;
+$border-color: #e5e7eb;
+$border-light: #f3f4f6;
+$shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+$shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+// Base container styles
+%exam-env-container-base {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $background-light 0%, #ffffff 100%);
+  padding: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+%exam-env-card-base {
+  background: $background-white;
+  border-radius: 12px;
+  box-shadow: $shadow-xl;
+  border: 1px solid $border-color;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  // Subtle gradient overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $primary-color, $success-color, $primary-color);
+    border-radius: 12px 12px 0 0;
+  }
+}
+
+%exam-env-icon-base {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1.5rem;
+  padding: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+%exam-env-title-base {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: $text-primary;
+  line-height: 1.3;
+}
+
+%exam-env-text-base {
+  font-size: 1rem;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+%exam-env-button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  &:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
+
+  &:not(:disabled):active {
+    transform: translateY(0);
+  }
+}
+
+// Loading State
+.exam-env-loading-container {
+  @extend %exam-env-container-base;
+}
+
+.exam-env-loading-card {
+  @extend %exam-env-card-base;
+}
+
+.exam-env-loading-icon {
+  @extend %exam-env-icon-base;
+  background: linear-gradient(135deg, $primary-color, $primary-dark);
+  color: white;
+  animation: spin 1s linear infinite, pulse 2s ease-in-out infinite;
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+}
+
+.exam-env-loading-title {
+  @extend %exam-env-title-base;
+}
+
+.exam-env-loading-text {
+  @extend %exam-env-text-base;
+  margin-bottom: 0;
+}
+
+// Error State
+.exam-env-error-container {
+  @extend %exam-env-container-base;
+}
+
+.exam-env-error-card {
+  @extend %exam-env-card-base;
+  
+  &::before {
+    background: linear-gradient(90deg, $error-color, #fca5a5, $error-color);
+  }
+}
+
+.exam-env-error-icon {
+  @extend %exam-env-icon-base;
+  background: linear-gradient(135deg, $error-color, #ef4444);
+  color: white;
+}
+
+.exam-env-error-title {
+  @extend %exam-env-title-base;
+  color: $error-color;
+}
+
+.exam-env-error-text {
+  @extend %exam-env-text-base;
+}
+
+.exam-env-error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.exam-env-error-back-btn {
+  @extend %exam-env-button-base;
+  background: $background-light;
+  color: $text-secondary;
+  border: 2px solid $border-color;
+
+  &:not(:disabled):hover {
+    background: $border-light;
+    border-color: $text-muted;
+    color: $text-primary;
+  }
+}
+
+.exam-env-error-retry-btn {
+  @extend %exam-env-button-base;
+  background: linear-gradient(135deg, $error-color, #ef4444);
+  color: white;
+  border: 2px solid transparent;
+
+  &:not(:disabled):hover {
+    background: linear-gradient(135deg, #b91c1c, $error-color);
+    box-shadow: $shadow-md;
+  }
+}
+
+// Permissions State
+.exam-env-permissions-container {
+  @extend %exam-env-container-base;
+}
+
+.exam-env-permissions-card {
+  @extend %exam-env-card-base;
+  
+  &::before {
+    background: linear-gradient(90deg, $warning-color, #fbbf24, $warning-color);
+  }
+}
+
+.exam-env-permissions-icon {
+  @extend %exam-env-icon-base;
+  background: linear-gradient(135deg, $warning-color, #f59e0b);
+  color: white;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.exam-env-permissions-title {
+  @extend %exam-env-title-base;
+  color: $warning-color;
+}
+
+.exam-env-permissions-text {
+  @extend %exam-env-text-base;
+}
+
+.exam-env-permissions-notice {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #f9a8d4;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.exam-env-permissions-notice-text {
+  font-size: 0.875rem;
+  color: #92400e;
+  margin: 0;
+  font-weight: 500;
+}
+
+// Ready State
+.exam-env-ready-container {
+  @extend %exam-env-container-base;
+}
+
+.exam-env-ready-card {
+  @extend %exam-env-card-base;
+  
+  &::before {
+    background: linear-gradient(90deg, $success-color, #10b981, $success-color);
+  }
+}
+
+.exam-env-ready-notice {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border: 1px solid #6ee7b7;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.exam-env-ready-notice-content {
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.exam-env-ready-icon {
+  width: 32px;
+  height: 32px;
+  color: $success-color;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.exam-env-ready-text-content {
+  flex: 1;
+}
+
+.exam-env-ready-notice-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #065f46;
+  margin: 0 0 0.25rem 0;
+}
+
+.exam-env-ready-notice-text {
+  font-size: 0.875rem;
+  color: #047857;
+  margin: 0;
+}
+
+// Responsive Design
+@media (max-width: 640px) {
+  %exam-env-card-base {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: none;
+  }
+
+  %exam-env-title-base {
+    font-size: 1.25rem;
+  }
+
+  %exam-env-text-base {
+    font-size: 0.875rem;
+  }
+
+  .exam-env-error-actions {
+    flex-direction: column;
+    align-items: stretch;
+    
+    button {
+      width: 100%;
+    }
+  }
+
+  .exam-env-ready-notice-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .exam-env-ready-icon {
+    margin: 0 0 1rem 0;
+  }
+}
+
+// Animation for smooth transitions
+.exam-env-loading-container,
+.exam-env-error-container,
+.exam-env-permissions-container,
+.exam-env-ready-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Enhanced button hover effects
+.exam-env-error-back-btn,
+.exam-env-error-retry-btn {
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  &:hover::before {
+    left: 100%;
+  }
+}
+
+// Loading spinner enhancement
+.exam-env-loading-icon {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent, $primary-color, transparent);
+    animation: rotate 2s linear infinite;
+    z-index: -1;
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Professional typography
+.exam-env-loading-title,
+.exam-env-error-title,
+.exam-env-permissions-title {
+  letter-spacing: -0.025em;
+  text-rendering: optimizeLegibility;
+}
+
+// Enhanced focus states for accessibility
+button:focus-visible {
+  outline: 2px solid $primary-color;
+  outline-offset: 2px;
+}
+
+// Dark mode support (optional)
+@media (prefers-color-scheme: dark) {
+  %exam-env-container-base {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+  }
+
+  %exam-env-card-base {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+
+  %exam-env-title-base {
+    color: #f9fafb;
+  }
+
+  %exam-env-text-base {
+    color: #d1d5db;
+  }
+
+  .exam-env-error-title {
+    color: #fca5a5;
+  }
+
+  .exam-env-permissions-title {
+    color: #fbbf24;
+  }
+
+  .exam-env-error-back-btn {
+    background: #374151;
+    color: #d1d5db;
+    border-color: #4b5563;
+
+    &:not(:disabled):hover {
+      background: #4b5563;
+      color: #f9fafb;
+    }
+  }
+
+  .exam-env-permissions-notice {
+    background: linear-gradient(135deg, #451a03, #78350f);
+    border-color: #92400e;
+  }
+
+  .exam-env-permissions-notice-text {
+    color: #fbbf24;
+  }
+
+  .exam-env-ready-notice {
+    background: linear-gradient(135deg, #064e3b, #065f46);
+    border-color: #059669;
+  }
+
+  .exam-env-ready-notice-title {
+    color: #a7f3d0;
+  }
+
+  .exam-env-ready-notice-text {
+    color: #6ee7b7;
+  }
+}
+
+// Print styles
+@media print {
+  .exam-env-loading-container,
+  .exam-env-error-container,
+  .exam-env-permissions-container,
+  .exam-env-ready-container {
+    display: none;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  %exam-env-card-base {
+    border-width: 2px;
+    border-color: $text-primary;
+  }
+
+  %exam-env-button-base {
+    border-width: 2px;
+  }
+
+  .exam-env-error-back-btn {
+    border-color: $text-primary;
+    color: $text-primary;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .exam-env-loading-icon {
+    animation: none;
+  }
+
+  .exam-env-permissions-icon {
+    animation: none;
+  }
+
+  %exam-env-button-base {
+    transition: none;
+  }
+
+  .exam-env-loading-container,
+  .exam-env-error-container,
+  .exam-env-permissions-container,
+  .exam-env-ready-container {
+    animation: none;
+  }
+}
+
+// Professional micro-interactions
+.exam-env-error-back-btn,
+.exam-env-error-retry-btn {
+  &:not(:disabled) {
+    &:hover {
+      box-shadow: $shadow-lg;
+    }
+
+    &:active {
+      box-shadow: $shadow-sm;
+      transform: translateY(1px);
+    }
+  }
+}
+
+// Loading state enhancements
+.exam-env-loading-card {
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: $primary-color;
+    animation: loadingProgress 3s ease-in-out infinite;
+  }
+}
+
+@keyframes loadingProgress {
+  0% {
+    width: 0%;
+    opacity: 1;
+  }
+  50% {
+    width: 70%;
+    opacity: 0.8;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
+}
+
+// Status indicator styles
+.exam-env-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  
+  &.loading {
+    background: #dbeafe;
+    color: $primary-dark;
+  }
+  
+  &.error {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  
+  &.success {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  
+  &.warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+}
+
+// Enhanced visual feedback
+.exam-env-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+// Professional spacing and typography scale
+.exam-env-section {
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.exam-env-subtitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: 0.5rem;
+}
+
+.exam-env-description {
+  font-size: 0.875rem;
+  color: $text-muted;
+  line-height: 1.5;
+}

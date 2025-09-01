@@ -1,0 +1,87 @@
+// Keyframes
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse {
+  0%, 100% { transform: scale(0.85); opacity: 0.7; }
+  50%      { transform: scale(1); opacity: 1; }
+}
+@keyframes dash {
+  0%   { stroke-dasharray: 1,200; stroke-dashoffset: 0; }
+  50%  { stroke-dasharray: 90,200; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90,200; stroke-dashoffset: -124; }
+}
+
+// Modal wrapper
+.spinner-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 18, 25, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+
+  .spinner-card {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    background: rgba(20, 22, 28, 0.8);
+    padding: 16px 24px;
+    border-radius: 16px;
+    color: #f0f0f5;
+    font-weight: 600;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+  }
+}
+
+// Base spinner
+.spinner {
+  --size: var(--spn-size);
+  --color: var(--spn-color);
+  --accent: var(--spn-accent);
+  --speed: var(--spn-speed);
+
+  width: var(--size);
+  height: var(--size);
+  display: inline-grid;
+  place-items: center;
+
+  &--sm { --size: 32px; }
+  &--md { --size: 48px; }
+  &--lg { --size: 72px; }
+  &--xl { --size: 96px; }
+}
+
+// Ring style
+.spinner--ring svg {
+  width: 100%;
+  height: 100%;
+  transform-origin: center;
+  animation: spin var(--speed) linear infinite;
+}
+.spinner--ring .track {
+  stroke: currentColor;
+  opacity: 0.2;
+  stroke-width: 5;
+}
+.spinner--ring .arc {
+  stroke: url(#spnGrad);
+  stroke-linecap: round;
+  stroke-width: 5;
+  animation: dash calc(var(--speed) * 1.4) ease-in-out infinite;
+}
+
+// Dots style
+.spinner--dots {
+  display: flex;
+  gap: 6px;
+
+  .dot {
+    width: 20%;
+    height: 20%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--color));
+    animation: pulse calc(var(--speed) * 0.9) ease-in-out infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.12s; }
+  .dot:nth-child(3) { animation-delay: 0.24s; }
+}

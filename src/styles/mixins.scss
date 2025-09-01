@@ -1,0 +1,41 @@
+@mixin displayProperties($ff, $jc,$ai){
+    display: flex;
+    flex-flow: $ff;
+    justify-content: $jc;
+    align-items: $ai;
+}
+
+// mixins.scss
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin button-style($bg, $color: white) {
+  background-color: $bg;
+  color: $color;
+  border: none;
+  padding: 10px 20px;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+@mixin card-style {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: $border-radius;
+  box-shadow: $shadow;
+  padding: 20px;
+  margin: 10px 0;
+}
+@mixin transition($properties: all, $duration: 0.3s, $ease: ease-in-out) {
+  transition: $properties $duration $ease;
+}
+@mixin box-shadow($shadow: $shadow) {
+  box-shadow: $shadow;
+}
