@@ -14,8 +14,7 @@ export const IsActiveCell: React.FC = (params: any) => {
   // Button should be clickable only if active AND schedule time has passed
   const canClick = params.value && now >= scheduleTime;
 
-  // TODO canClick instead of !canClick
-  return !canClick ? (
+  return canClick ? (
     <button
       onClick={() => {
         navigate(`/dashboard/${userId}/create-question/${params.data.id}`)

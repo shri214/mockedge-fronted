@@ -67,16 +67,16 @@ export interface FormErrors {
 }
 
 export interface CreateAttemptDto {
-  mockName: string;
-  userId: string;
-  testScheduledId: string;
+  mockName: string | undefined;
+  userId: string | undefined;
+  testScheduledId: string | undefined;
 }
 
 export interface Question {
-  questionId: number;
+  questionId: string;
   questionText: string;
   options: string[];
-  givenAnswer: string | null;
+  givenAnswer?: string | null;
   isAnswered: boolean;
   timeTakenSeconds: number;
 }
@@ -90,9 +90,6 @@ export interface ExamState {
 }
 
 export interface SecureExamEnvironmentProps {
-  formData: any;
-  testData: any;
-  onStartExam: () => void;
   onExitSecure: () => void;
   onSecurityViolation: (
     violation: string,
@@ -112,9 +109,9 @@ export interface IQuestionQuery {
   limit: number;
   subject?: string;
   difficultyLevel?: string;
-  previousYear?:string;
-  exam?:string;
-  chapter?:string;
+  previousYear?: string;
+  exam?: string;
+  chapter?: string;
 }
 
 export interface UnifiedDto {
@@ -144,4 +141,23 @@ export interface TestData {
   testName: string;
   duration?: number;
   instructions?: string;
+}
+
+export interface OngoingExamProps {
+  cleanupSecureMode: () => void;
+  onExitSecure: () => void;
+}
+
+export interface PaginationInfo {
+  totalQuestions: number;
+  currentPage: number;
+  hasNext: boolean;
+}
+
+export interface ApiResponse {
+  attemptId: string;
+  questions: Question[];
+  totalQuestions: number;
+  currentPage: number;
+  hasNext: boolean;
 }

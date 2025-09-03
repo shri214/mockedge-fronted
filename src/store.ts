@@ -10,7 +10,7 @@ import { questionQueryReducer } from "./redux/questionQuery.slice";
 const rootPersistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "collapse", "testSchedule"], // you can add more slices later
+  whitelist: ["user", "collapse", "testSchedule", "questionQuery"], // you can add more slices later
 };
 
 const rootReducer = combineReducers({

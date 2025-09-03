@@ -21,12 +21,10 @@ import type { UnifiedDto } from "../../Interface";
 
 
 
-// Hook to get user role - replace with your actual auth logic
 const useUserRole = () => {
-  // Replace with your actual user role logic from Redux/Context
-  const userRole = useAppSelector((state: RootState) => state.user.user?.role); // Adjust according to your auth state
+  const userRole = useAppSelector((state: RootState) => state.user.user?.role); 
   return {
-    role: userRole || "user", // Default to "user" if no role
+    role: userRole || "user", 
     isLoading: false,
   };
 };
@@ -38,7 +36,6 @@ export const CreateAttempts = () => {
     state.testSchedule.data.filter((val) => val.id === testId)
   );
 
-  
   const [currentStep, setCurrentStep] = useState<string>("selection-type");
   const [selectionType, setSelectionType] = useState<string>("");
   const [formData, setFormData] = useState<UnifiedDto>({
@@ -232,7 +229,7 @@ export const CreateAttempts = () => {
   const handleSelectionTypeChange = (type: string) => {
     setSelectionType(type);
     setFormData({
-      attemptId: testId || "",
+      attemptId:"",
       limit: isAdmin ? 100 : 10,
     });
     setCurrentStep("configure");
@@ -266,7 +263,7 @@ export const CreateAttempts = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
     dispatch(setQuestionQuery(formData))
-    navigate(`/exam-env/${userId}/${testId}`);
+    navigate(`/exam-env/${userId}/${testId}/${testData[0].testName}`);
   };
 
   const renderConfigField = (field: string, isOptional: boolean = false) => {

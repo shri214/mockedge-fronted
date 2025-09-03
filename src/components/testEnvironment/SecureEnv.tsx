@@ -11,28 +11,61 @@ import {
   Battery,
   Volume2,
 } from "lucide-react";
-
 import "./SecureEnv.scss";
-import type { SecureExamEnvironmentProps, SecurityViolation } from "../../Interface";
+import { OngoingExam } from "./OngoingExam";
+import HTTP from "../../BackendApis";
+import { useAppSelector } from "../../redux/hook";
+import type { RootState } from "../../store";
+import { useParams } from "react-router-dom";
+import { CreateAttempts } from "../../function/createAttempts";
+import { useDispatch } from "react-redux";
+import { setQuestionQuery } from "../../redux/questionQuery.slice";
+import { toast } from "react-toastify";
 
+interface SecureExamEnvironmentProps {
+  onExitSecure: () => void;
+  onSecurityViolation: (
+    violation: string,
+    severity: "warning" | "critical"
+  ) => void;
+}
 
+interface SecurityViolation {
+  type: string;
+  timestamp: Date;
+  severity: "warning" | "critical";
+  description: string;
+}
+
+interface SystemChecks {
+  camera: boolean;
+  microphone: boolean;
+  fullscreen: boolean;
+  networkStable: boolean;
+  batteryLevel: boolean;
+  noOtherApps: boolean;
+}
+
+type ExamStep = "agreement" | "setup" | "verification" | "exam";
 
 const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
-  formData,
-  testData,
-  onStartExam,
   onExitSecure,
   onSecurityViolation,
 }) => {
+  const { testName, userId, testId } = useParams<{
+    testName: string;
+    userId: string;
+    testId: string;
+  }>();
+  const { questionQuery } = useAppSelector((state: RootState) => state);
+  const dispatch = useDispatch();
+
   // State management
-  const [currentStep, setCurrentStep] = useState<
-    "agreement" | "setup" | "verification" | "exam"
-  >("agreement");
+  const [currentStep, setCurrentStep] = useState<ExamStep>("agreement");
   const [isSecureMode, setIsSecureMode] = useState(false);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
-  const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
   const [violations, setViolations] = useState<SecurityViolation[]>([]);
-  const [systemChecks, setSystemChecks] = useState({
+  const [systemChecks, setSystemChecks] = useState<SystemChecks>({
     camera: false,
     microphone: false,
     fullscreen: false,
@@ -40,16 +73,12 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     batteryLevel: false,
     noOtherApps: false,
   });
-  const [examStartTime, setExamStartTime] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [agreementAccepted, setAgreementAccepted] = useState(false);
 
   // Refs
   const cameraRef = useRef<HTMLVideoElement>(null);
-  const violationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
-  const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
 
   // Security monitoring
   const addViolation = useCallback(
@@ -62,6 +91,7 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
       };
 
       setViolations((prev) => [...prev, violation]);
+      //TODO WHEN IT CALL IT LEFT CAMERA OPEN
       onSecurityViolation(description, severity);
 
       // Auto-terminate on critical violations
@@ -76,14 +106,12 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
   useEffect(() => {
     if (!isSecureMode) return;
 
-    // Fullscreen monitoring
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) {
         addViolation("fullscreen-exit", "critical", "Exited fullscreen mode");
       }
     };
 
-    // Visibility monitoring
     const handleVisibilityChange = () => {
       if (document.hidden) {
         addViolation(
@@ -94,12 +122,10 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
       }
     };
 
-    // Focus monitoring
     const handleBlur = () => {
       addViolation("focus-loss", "warning", "Lost window focus");
     };
 
-    // Keyboard monitoring
     const handleKeyDown = (e: KeyboardEvent) => {
       const blockedKeys = [
         "F11",
@@ -109,18 +135,22 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
         "Insert",
         "Delete",
         "Meta",
+      ];
+
+      const blockedCombos = [
         "Alt+Tab",
         "Ctrl+Shift+I",
         "Ctrl+Shift+J",
         "Ctrl+U",
+        "Ctrl+R",
+        "F5",
       ];
 
-      const key = e.key;
       const combo = `${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${
         e.altKey ? "Alt+" : ""
-      }${key}`;
+      }${e.key}`;
 
-      if (blockedKeys.includes(key) || blockedKeys.includes(combo)) {
+      if (blockedKeys.includes(e.key) || blockedCombos.includes(combo)) {
         e.preventDefault();
         e.stopPropagation();
         addViolation(
@@ -131,13 +161,11 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
       }
     };
 
-    // Right-click prevention
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
       addViolation("context-menu", "warning", "Attempted to open context menu");
     };
 
-    // Mouse monitoring (detect if user moves to other screens)
     const handleMouseLeave = () => {
       addViolation("mouse-leave", "warning", "Mouse left the exam window");
     };
@@ -150,7 +178,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     document.addEventListener("contextmenu", handleContextMenu);
     document.addEventListener("mouseleave", handleMouseLeave);
 
-    // Cleanup
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
@@ -179,7 +206,7 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
 
     // Heartbeat to monitor connection
     heartbeatRef.current = setInterval(() => {
-      fetch("/api/heartbeat", { method: "POST" }).catch(() =>
+      HTTP.get("/user").catch(() =>
         addViolation(
           "network-unstable",
           "warning",
@@ -199,29 +226,35 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
   useEffect(() => {
     if (!isSecureMode || !("getBattery" in navigator)) return;
 
-    (navigator as any).getBattery().then((battery: any) => {
-      const updateBatteryStatus = () => {
-        const isCharging = battery.charging;
-        const level = battery.level * 100;
+    (navigator as any)
+      .getBattery()
+      .then((battery: any) => {
+        const updateBatteryStatus = () => {
+          const isCharging = battery.charging;
+          const level = battery.level * 100;
 
-        setSystemChecks((prev) => ({
-          ...prev,
-          batteryLevel: isCharging || level > 20,
-        }));
+          setSystemChecks((prev) => ({
+            ...prev,
+            batteryLevel: isCharging || level > 20,
+          }));
 
-        if (!isCharging && level < 20) {
-          addViolation(
-            "battery-low",
-            "warning",
-            `Battery level low: ${level.toFixed(0)}%`
-          );
-        }
-      };
+          if (!isCharging && level < 20) {
+            addViolation(
+              "battery-low",
+              "warning",
+              `Battery level low: ${level.toFixed(0)}%`
+            );
+          }
+        };
 
-      battery.addEventListener("chargingchange", updateBatteryStatus);
-      battery.addEventListener("levelchange", updateBatteryStatus);
-      updateBatteryStatus();
-    });
+        battery.addEventListener("chargingchange", updateBatteryStatus);
+        battery.addEventListener("levelchange", updateBatteryStatus);
+        updateBatteryStatus();
+      })
+      .catch(() => {
+        // Battery API not supported, assume battery is OK
+        setSystemChecks((prev) => ({ ...prev, batteryLevel: true }));
+      });
   }, [isSecureMode, addViolation]);
 
   // Camera setup
@@ -256,23 +289,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     }
   };
 
-  // Screen sharing (for monitoring)
-  const setupScreenShare = async (): Promise<boolean> => {
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-        audio: true,
-      });
-
-      setScreenStream(stream);
-      return true;
-    } catch (error) {
-      console.error("Screen share failed:", error);
-      addViolation("screen-denied", "critical", "Screen sharing denied");
-      return false;
-    }
-  };
-
   // Enter fullscreen
   const enterFullscreen = async (): Promise<boolean> => {
     try {
@@ -297,11 +313,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
 
   // Security termination
   const handleSecurityTermination = (reason: string) => {
-    if (violationTimeoutRef.current) {
-      clearTimeout(violationTimeoutRef.current);
-    }
-
-    // Auto-submit exam or terminate
     alert(`Security violation detected: ${reason}\nExam will be terminated.`);
     cleanupSecureMode();
     onExitSecure();
@@ -309,28 +320,27 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
 
   // Cleanup function
   const cleanupSecureMode = () => {
-    // Stop camera stream
     if (cameraStream) {
       cameraStream.getTracks().forEach((track) => track.stop());
       setCameraStream(null);
     }
 
-    // Stop screen stream
-    if (screenStream) {
-      screenStream.getTracks().forEach((track) => track.stop());
-      setScreenStream(null);
-    }
-
-    // Exit fullscreen
     if (document.exitFullscreen && document.fullscreenElement) {
       document.exitFullscreen().catch(console.error);
     }
 
-    // Clear intervals
     if (heartbeatRef.current) {
       clearInterval(heartbeatRef.current);
     }
 
+    setSystemChecks({
+      camera: false,
+      microphone: false,
+      fullscreen: false,
+      networkStable: false,
+      batteryLevel: false,
+      noOtherApps: false,
+    });
     setIsSecureMode(false);
   };
 
@@ -342,33 +352,20 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     setCurrentStep("setup");
 
     try {
-      // Step 1: Setup camera
       const cameraOk = await setupCamera();
       if (!cameraOk) throw new Error("Camera setup failed");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Step 2: Enter fullscreen
       const fullscreenOk = await enterFullscreen();
       if (!fullscreenOk) throw new Error("Fullscreen setup failed");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Step 3: Setup screen monitoring (optional)
-      await setupScreenShare().catch(() => {
-        // Non-critical, continue without screen share
-        addViolation(
-          "screen-share-optional",
-          "warning",
-          "Screen sharing not available"
-        );
-      });
-
-      // Step 4: Final checks
       setSystemChecks((prev) => ({
         ...prev,
         networkStable: navigator.onLine,
-        noOtherApps: true, // Assume true for now
+        noOtherApps: true,
       }));
 
       setIsSecureMode(true);
@@ -383,39 +380,30 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     }
   };
 
-  // Start exam - This is where the API call happens
+  // Start exam
   const startExam = async () => {
     setIsLoading(true);
-    setCurrentStep("exam");
-    setExamStartTime(new Date());
-   
+
     try {
-      // Make API call to get questions with security context
-      // const response = await fetch("/api/test-attempts/questions", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     ...formData,
-      //     securityMode: true,
-      //     securityContext: {
-      //       timestamp: new Date().toISOString(),
-      //       violations: violations,
-      //       systemChecks: systemChecks,
-      //       sessionId: generateSessionId()
-      //     }
-      //   }),
-      // });
+      const config = {
+        mockName: testName,
+        userId: userId,
+        testScheduledId: testId,
+      };
 
-      // if (response.ok) {
-      // const result = await response.json();
-      console.log("Questions fetched successfully:");
-
-      // Pass the exam data to parent component
-      onStartExam();
-      // } else {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || "Failed to fetch questions");
-      // }
+      const res = await CreateAttempts(config);
+      console.log(res);
+      if (!res.data) {
+        throw new Error(res?.error || "Failed to create exam attempt");
+      }
+      toast.success(res?.message);
+      dispatch(
+        setQuestionQuery({
+          ...questionQuery,
+          attemptId: res.data.id,
+        })
+      );
+      setCurrentStep("exam");
     } catch (error) {
       console.error("Error starting exam:", error);
       addViolation("exam-start-failed", "critical", "Failed to start exam");
@@ -425,16 +413,17 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     }
   };
 
-  // Generate unique session ID
-  const generateSessionId = (): string => {
-    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  };
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cleanupSecureMode();
+    };
+  }, []);
 
-  // Render security agreement
+  // Render methods
   const renderAgreement = () => (
     <div className="secure-agreement-overlay">
       <div className="secure-agreement-container">
-        {/* Header */}
         <div className="secure-agreement-header">
           <div className="secure-agreement-header-content">
             <Shield className="secure-agreement-icon" />
@@ -449,7 +438,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
           </div>
         </div>
 
-        {/* Content */}
         <div className="secure-agreement-content">
           <div className="secure-agreement-section">
             <h2 className="secure-agreement-section-title">
@@ -460,14 +448,14 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
                 <Camera className="secure-requirement-icon camera-icon" />
                 <span>
                   <strong>Camera & Audio:</strong> Continuous monitoring for
-                  identity verification and behavior analysis
+                  identity verification
                 </span>
               </div>
               <div className="secure-requirement-item">
                 <Monitor className="secure-requirement-icon monitor-icon" />
                 <span>
                   <strong>Screen Monitoring:</strong> Full-screen lock with
-                  screen recording for security
+                  activity monitoring
                 </span>
               </div>
               <div className="secure-requirement-item">
@@ -510,30 +498,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
             </div>
           </div>
 
-          <div className="secure-agreement-section">
-            <h2 className="secure-agreement-section-title">
-              Violation Consequences
-            </h2>
-            <div className="secure-consequences-box">
-              <div className="secure-consequences-list">
-                <div className="secure-consequence-item">
-                  <AlertTriangle className="secure-consequence-icon warning-icon" />
-                  <span>
-                    <strong>Warning Violations:</strong> Logged and reported,
-                    may affect final score
-                  </span>
-                </div>
-                <div className="secure-consequence-item">
-                  <AlertTriangle className="secure-consequence-icon critical-icon" />
-                  <span>
-                    <strong>Critical Violations:</strong> Immediate exam
-                    termination
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div className="secure-agreement-checkbox-container">
             <label className="secure-agreement-checkbox-label">
               <input
@@ -545,14 +509,12 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
               <span className="secure-agreement-checkbox-text">
                 I understand and agree to all security requirements. I
                 acknowledge that this exam session will be monitored and
-                recorded. Any violation may result in exam termination and
-                academic consequences.
+                recorded. Any violation may result in exam termination.
               </span>
             </label>
           </div>
         </div>
 
-        {/* Actions */}
         <div className="secure-agreement-actions">
           <button
             onClick={onExitSecure}
@@ -572,7 +534,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     </div>
   );
 
-  // Render setup process
   const renderSetup = () => (
     <div className="secure-setup-overlay">
       <div className="secure-setup-container">
@@ -614,10 +575,8 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     </div>
   );
 
-  // Render verification screen
   const renderVerification = () => (
     <div className="secure-verification-overlay">
-      {/* Top bar */}
       <div className="secure-verification-topbar">
         <div className="secure-verification-topbar-left">
           <Shield className="secure-topbar-icon" />
@@ -647,9 +606,7 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
         </div>
       </div>
 
-      {/* Main content */}
       <div className="secure-verification-main">
-        {/* Camera feed */}
         <div className="secure-verification-camera-panel">
           <h3 className="secure-camera-panel-title">Identity Verification</h3>
           <div className="secure-camera-container">
@@ -684,7 +641,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
           </div>
         </div>
 
-        {/* Instructions */}
         <div className="secure-verification-instructions">
           <div className="secure-instructions-content">
             <Eye className="secure-instructions-icon" />
@@ -696,12 +652,12 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
               <p>• Ensure stable internet connection</p>
             </div>
 
-            {testData && testData.length > 0 && (
+            {testName && (
               <div className="secure-exam-details">
                 <h3 className="secure-exam-details-title">Exam Details:</h3>
-                <p className="secure-exam-name">{testData[0].testName}</p>
+                <p className="secure-exam-name">{testName}</p>
                 <p className="secure-exam-questions">
-                  Questions: {formData.limit || "N/A"}
+                  Questions: {questionQuery?.limit || "N/A"}
                 </p>
               </div>
             )}
@@ -719,7 +675,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
         </div>
       </div>
 
-      {/* Violations panel */}
       {violations.length > 0 && (
         <div className="secure-violations-panel">
           <div className="secure-violations-content">
@@ -733,13 +688,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     </div>
   );
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      cleanupSecureMode();
-    };
-  }, []);
-
   // Render based on current step
   switch (currentStep) {
     case "agreement":
@@ -749,8 +697,12 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
     case "verification":
       return renderVerification();
     case "exam":
-      // This would be handled by parent component
-      return null;
+      return (
+        <OngoingExam
+          cleanupSecureMode={cleanupSecureMode}
+          onExitSecure={onExitSecure}
+        />
+      );
     default:
       return null;
   }

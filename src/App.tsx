@@ -128,7 +128,7 @@ export const App: React.FC = () => {
             }
           />
           <Route
-            path="exam-env/:userId/:testId"
+            path="exam-env/:userId/:testId/:testName"
             element={
               <ProtectedRoute>
                 <Suspense
@@ -138,7 +138,7 @@ export const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/exam/:testId/questions"
             element={
               <ProtectedRoute>
@@ -148,7 +148,7 @@ export const App: React.FC = () => {
                 <OngoingExam />
               </ProtectedRoute>
             }
-          />
+          /> */}
           {/* Protected Dashboard Routes */}
           <Route
             path="/dashboard/:userId"
